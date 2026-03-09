@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Chrome autofill fix with animation trick to prevent black text flash */
+@keyframes autofillFix {
+  0%, 100% { 
+    color: inherit; 
+    background: inherit; 
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  animation-name: autofillFix;
+  animation-fill-mode: both;
+  animation-duration: 0.01s;
+
+  -webkit-text-fill-color: inherit !important;
+  caret-color: inherit !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+}
+
+/* Dark mode autofill */
+.dark input:-webkit-autofill,
+.dark textarea:-webkit-autofill,
+.dark select:-webkit-autofill {
+  animation-name: autofillFix;
+  animation-fill-mode: both;
+  animation-duration: 0.01s;
+
+  -webkit-text-fill-color: inherit !important;
+  caret-color: inherit !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset !important;
+  box-shadow: 0 0 0px 1000px #0a0a0a inset !important;
+}
