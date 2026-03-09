@@ -3,14 +3,19 @@ import { prisma } from "@/lib/prisma";
 import { verifyAuth } from "@/middleware/auth";
 import { dateKeyUTC } from "@/utils/date";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+
   const auth = await verifyAuth(req);
 
   if ("error" in auth)
     return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const habit = await prisma.habit.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       logs: {
         orderBy: { date: "asc" },
@@ -34,21 +39,26 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   });
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+
   const auth = await verifyAuth(req);
 
   if ("error" in auth)
     return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const habit = await prisma.habit.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!habit || habit.userId !== auth.user.id)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await prisma.habit.delete({
-    where: { id: params.id },
+    where: { id },
   });
 
   return NextResponse.json({ ok: true });
