@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?  // make it optional for now
+  email     String   @unique
+  password  String
+  habits    Habit[]
+  createdAt DateTime @default(now())
+}
+
+model Habit {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title         String
+  frequency     String     // "daily" | "weekly"
+  targetPerWeek Int?
+  color         String?
+
+  logs          HabitLog[]
+  createdAt     DateTime   @default(now())
+}
+
+model HabitLog {
+  id        String   @id @default(cuid())
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  date      DateTime // midnight UTC for a YYYY-MM-DD
+  done      Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+
+  @@unique([habitId, date])
+  @@index([habitId, date])
+}
