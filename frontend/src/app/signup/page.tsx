@@ -28,20 +28,19 @@ export default function SignupPage() {
   const passwordStrength = useMemo(() => {
     if (!password) return 0;
     let score = 0;
-    if (password.length >= 8) score += 1; // Length check
-    if (/[A-Z]/.test(password)) score += 1; // Uppercase check
-    if (/[0-9]/.test(password)) score += 1; // Number check
-    if (/[^A-Za-z0-9]/.test(password)) score += 1; // Special char check
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
     return score;
   }, [password]);
 
-  // Dynamic color mapping for the strength meter
   const getStrengthColor = (step: number) => {
     if (passwordStrength < step) return "bg-slate-100";
     if (passwordStrength === 1) return "bg-red-500";
     if (passwordStrength === 2) return "bg-orange-400";
     if (passwordStrength === 3) return "bg-yellow-400";
-    return "bg-emerald-500"; // Full strength Green
+    return "bg-emerald-500";
   };
 
   async function onSubmit(e: React.FormEvent) {
@@ -50,13 +49,15 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      // ✅ Updated API route for App Router
       await api("/auth/signup", {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
       });
-      // Redirect to login after successful signup
+
       router.push("/login");
     } catch (err: unknown) {
+      console.error("Signup error:", err);
       setError(err instanceof Error ? err.message : "Signup failed. Please try again.");
     } finally {
       setLoading(false);
@@ -65,7 +66,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 selection:bg-indigo-100">
-      {/* Brand Identity */}
+      {/* Brand */}
       <Link 
         href="/" 
         className="flex items-center gap-2 font-bold text-2xl tracking-tight text-indigo-600 mb-8 hover:opacity-80 transition-opacity"
@@ -87,11 +88,9 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-5">
-            {/* Full Name Input */}
+            {/* Name */}
             <div className="space-y-1.5">
-              <label htmlFor="name" className="text-sm font-bold text-slate-900 ml-1">
-                Full Name
-              </label>
+              <label htmlFor="name" className="text-sm font-bold text-slate-900 ml-1">Full Name</label>
               <div className="relative group">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                 <input
@@ -100,17 +99,15 @@ export default function SignupPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
                   placeholder="Name"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
 
-            {/* Email Input */}
+            {/* Email */}
             <div className="space-y-1.5">
-              <label htmlFor="email" className="text-sm font-bold text-slate-900 ml-1">
-                Email Address
-              </label>
+              <label htmlFor="email" className="text-sm font-bold text-slate-900 ml-1">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                 <input
@@ -119,17 +116,15 @@ export default function SignupPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
                   placeholder="Email"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
 
-            {/* Password Input */}
+            {/* Password */}
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-sm font-bold text-slate-900 ml-1">
-                Password
-              </label>
+              <label htmlFor="password" className="text-sm font-bold text-slate-900 ml-1">Password</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                 <input
@@ -139,12 +134,12 @@ export default function SignupPage() {
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
                   placeholder="Min. 8 characters"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
                 />
               </div>
-              
-              {/* Strength Indicator */}
+
+              {/* Strength Meter */}
               <div className="flex flex-col gap-2 mt-2 px-1">
                 <div className="flex gap-1.5">
                   {[1, 2, 3, 4].map((step) => (
@@ -171,7 +166,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* Error Message Display */}
+            {/* Error Message */}
             {error && (
               <div className="flex items-center gap-2 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold animate-in fade-in zoom-in-95">
                 <AlertCircle size={18} />

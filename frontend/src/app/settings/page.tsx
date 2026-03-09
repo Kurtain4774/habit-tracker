@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   Save,
   Bell,
-  ShieldCheck,
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,7 +32,7 @@ export default function SettingsPage() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const user = await api<{ name: string; email: string }>("/habits/me");
+        const user = await api<{ name: string; email: string }>("/user/me");
         setUserData(user);
         setFormData((f) => ({ ...f, name: user.name, email: user.email }));
       } catch (error: unknown) {
@@ -50,14 +49,16 @@ export default function SettingsPage() {
     setIsSaving(true);
 
     try {
-      // Attempt update if endpoint exists
       const body = {
         name: formData.name,
         email: formData.email,
-        ...(formData.newPassword ? { currentPassword: formData.currentPassword, newPassword: formData.newPassword } : {}),
+        ...(formData.newPassword
+          ? { currentPassword: formData.currentPassword, newPassword: formData.newPassword }
+          : {}),
       };
 
-      const data = await api("/habits/update", {
+      // ✅ Updated route for App Router
+      const data = await api("/user/update", {
         method: "PATCH",
         body: JSON.stringify(body),
       });
@@ -75,9 +76,10 @@ export default function SettingsPage() {
 
   const handleDeleteAccount = async () => {
     try {
-      await api("/habits/account", { method: "DELETE" });
+      // ✅ Updated route for App Router
+      await api("/user/delete", { method: "DELETE" });
       toast.success("Account deleted. We're sorry to see you go.");
-      router.push("/register");
+      router.push("/signup");
     } catch (error: unknown) {
       console.error("Delete account error:", error);
       const errorMessage = error instanceof Error ? error.message : "Could not delete account";

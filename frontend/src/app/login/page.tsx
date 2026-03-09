@@ -27,17 +27,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await api<{ token: string }>("/auth/login", {
+      // ✅ Updated route for App Router
+      const res = await api<{ token: string; user: { id: string; name: string; email: string } }>("/auth/login", {
         method: "POST",
-        body: JSON.stringify({
-          email: email || "test@example.com",
-          password: password || "password123",
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       setToken(res.token);
       router.push("/dashboard");
     } catch (err: unknown) {
+      console.error("Login error:", err);
       const message = err instanceof Error ? err.message : "Invalid email or password";
       setError(message);
     } finally {
@@ -47,7 +46,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 selection:bg-indigo-100">
-      {/* Logo Link back to Home */}
+      {/* Logo */}
       <Link 
         href="/" 
         className="flex items-center gap-2 font-bold text-2xl tracking-tight text-indigo-600 mb-10 hover:opacity-80 transition-opacity"
@@ -64,11 +63,9 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-6">
-            {/* Email Field */}
+            {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-bold text-slate-900 ml-1">
-                Email Address
-              </label>
+              <label htmlFor="email" className="text-sm font-bold text-slate-900 ml-1">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
                 <input
@@ -77,18 +74,16 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                   placeholder="Email"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                <label htmlFor="password" className="text-sm font-bold text-slate-900">
-                  Password
-                </label>
+                <label htmlFor="password" className="text-sm font-bold text-slate-900">Password</label>
                 <Link href="/forgot-password" className="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
                   Forgot?
                 </Link>
@@ -101,13 +96,13 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                   placeholder="Password"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-900 font-semibold placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* Error Message */}
+            {/* Error */}
             {error && (
               <div className="flex items-center gap-2 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold animate-in fade-in zoom-in-95">
                 <AlertCircle size={18} />
@@ -133,17 +128,13 @@ export default function LoginPage() {
           <div className="mt-10 text-center">
             <p className="text-slate-500 font-medium">
               Don&apos;t have an account?{" "}
-              <Link 
-                href="/signup" 
-                className="text-indigo-600 font-bold hover:underline underline-offset-4"
-              >
+              <Link href="/signup" className="text-indigo-600 font-bold hover:underline underline-offset-4">
                 Sign up for free
               </Link>
             </p>
           </div>
         </div>
-        
-        {/* Simple Footer Links */}
+
         <div className="mt-8 flex justify-center gap-6 text-xs font-bold text-slate-400 uppercase tracking-widest">
           <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacy</Link>
           <Link href="/terms" className="hover:text-slate-600 transition-colors">Terms</Link>

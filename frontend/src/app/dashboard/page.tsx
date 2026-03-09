@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [userLoading, setUserLoading] = useState(true);
 
-  // 1. Memoized Date to prevent re-renders on every tick
+  // Memoized formatted date
   const formattedDate = useMemo(() => {
     return new Intl.DateTimeFormat("en-US", {
       weekday: "long",
@@ -39,17 +39,18 @@ export default function DashboardPage() {
     }).format(new Date());
   }, []);
 
-  // 2. Robust User Fetching
+  // Fetch current user
   useEffect(() => {
     let isMounted = true;
     
     const fetchUser = async () => {
       try {
-        const data = await api<User>("/habits/me");
+        // ✅ Updated endpoint to App Router
+        const data = await api<User>("/user/me");
         if (isMounted) setUser(data);
       } catch (error) {
         toast.error("Session expired. Please log in again.");
-        // router.push("/login"); // Optional: auto-redirect on auth failure
+        router.push("/login"); // redirect on auth failure
       } finally {
         if (isMounted) setUserLoading(false);
       }
@@ -57,13 +58,11 @@ export default function DashboardPage() {
 
     fetchUser();
     return () => { isMounted = false; };
-  }, []);
+  }, [router]);
 
-  // 3. Optimized Callback for Deletion
+  // Delete habit callback with optimistic update
   const deleteHabit = useCallback(async (id: string) => {
     const previousHabits = [...habits];
-    
-    // Optimistic Update
     setHabits((prev) => prev.filter((h) => h.id !== id));
 
     try {
@@ -75,7 +74,6 @@ export default function DashboardPage() {
     }
   }, [habits, setHabits]);
 
-  // 4. Unified Loading State
   if (habitsLoading || userLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50" role="status" aria-label="Loading your dashboard">
@@ -116,7 +114,7 @@ export default function DashboardPage() {
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left Column: Primary Actions */}
+          {/* Left Column */}
           <div className="lg:col-span-8 space-y-8">
             <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8">
               <div className="flex items-center gap-2 mb-6">
@@ -146,7 +144,7 @@ export default function DashboardPage() {
             </section>
           </div>
 
-          {/* Right Column: Analytics & Motivation */}
+          {/* Right Column */}
           <aside className="lg:col-span-4 space-y-8">
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 sticky top-24">
               <h2 className="font-bold text-slate-400 mb-6 text-xs uppercase tracking-[0.2em]">

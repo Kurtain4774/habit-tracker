@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
   CheckCircle2, 
@@ -12,7 +11,6 @@ import {
   Send
 } from "lucide-react";
 import { api } from "@/lib/api";
-import { cn } from "@/lib/utils";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -26,12 +24,14 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
+      // ✅ Updated App Router endpoint
       await api("/auth/forgot-password", {
         method: "POST",
         body: JSON.stringify({ email }),
       });
       setSubmitted(true);
     } catch (err: unknown) {
+      console.error("Forgot password error:", err);
       setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
     } finally {
       setLoading(false);
